@@ -6,7 +6,6 @@ class UserList extends React.Component {
 
     componentDidMount() {
         client.getTimers((res) => {
-            console.log('999999999', res);
             this.setState({users: res})
         })
     }
@@ -24,7 +23,16 @@ class UserList extends React.Component {
         this.setState({
             users: newUsers,
         });
-        console.log('123.', userId, login);
+    }
+
+    handelDeleteUserFromList = (userId) => {
+        const newUsers = [...this.state.users];
+        newUsers.map((user, index) => {
+            if (userId === user.id) {
+                newUsers.splice(index, 1);
+                this.setState({users: newUsers});
+            }
+        })
     }
 
     render() {
@@ -45,6 +53,7 @@ class UserList extends React.Component {
                 login={user.login}
                 html_url={user.html_url}
                 onEdit = {this.handelEditUserLogin}
+                onDelete = {this.handelDeleteUserFromList}
             />
             )
         )
@@ -68,8 +77,11 @@ class User extends React.Component {
 
     handleEditLogin = (event) => {
         event.preventDefault();
-        console.log(event.target.value)
         this.props.onEdit(this.props.id, event.target.value);
+    }
+
+    handleDeleteUserFromList = () => {
+        this.props.onDelete(this.props.id);
     }
 
     closeEditInput = (event) => {
@@ -77,7 +89,6 @@ class User extends React.Component {
         if (event.keyCode === 13) {
             this.setState({isEdit: false});
         }
-        console.log(this.props.login);
     }
 
     render() {
@@ -97,15 +108,15 @@ class User extends React.Component {
                     <div onClick={this.handleOpenInput} className={`editIcon ui icon button ${this.state.isEdit ? "hide" : ""}`} data-inverted="" data-tooltip="Edit users login" data-position="top left">
                         <i className='pencil alternate icon' />
                     </div>
+                    <div onClick={this.handleDeleteUserFromList} className={`editIcon ui icon button ${this.state.isEdit ? "hide" : ""}`} data-inverted="" data-tooltip="Delete user from list" data-position="top left">
+                        <i className='delete icon' />
+                    </div>
                     <div className='description'>
                         <i className='github icon' />
                         <a href={this.props.html_url} target="_blank">
                             {this.props.html_url}
                         </a>
                     </div>
-                </div>
-                <div className='header'>
-
                 </div>
             </div>
         );
